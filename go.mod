@@ -1,4 +1,4 @@
-module adotkaya.greenlight
+module adotkaya.greenlight.net
 
 go 1.25.1
 
