@@ -17,7 +17,9 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 		Runtime int32    `json:"runtime"`
 		Genres  []string `json:"genres"`
 	}
-
+	// could have been done with json.Unmarshall too
+	// body, err := io.ReadAll(r.body), if err != nil {app.serverErrorResponse(w,r,err)}
+	// err = json.Unmarshall(body, &input), if err != nil {app.errorResponse(w,r,http.BadRequest,err.Error())}
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
 		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
