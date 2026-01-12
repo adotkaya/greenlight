@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -20,9 +19,9 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	// could have been done with json.Unmarshall too
 	// body, err := io.ReadAll(r.body), if err != nil {app.serverErrorResponse(w,r,err)}
 	// err = json.Unmarshall(body, &input), if err != nil {app.errorResponse(w,r,http.BadRequest,err.Error())}
-	err := json.NewDecoder(r.Body).Decode(&input)
+	err := app.readJSON(w, r, &input)
 	if err != nil {
-		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		app.badRequestResponse(w, r, err)
 		return
 	}
 	fmt.Fprintf(w, "%+v\n", input)
