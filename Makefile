@@ -61,3 +61,47 @@ audit:
 	go vet ./...
 	@echo 'Running tests...'
 	go test -race -vet=off ./...
+
+# ==================================================================================== #
+# DATABASE MIGRATIONS
+# ==================================================================================== #
+
+## db/psql: connect to the database using psql
+.PHONY: db/psql
+db/psql:
+	psql ${GREENLIGHT_DB_DSN}
+
+## db/migrations/new name=$1: create a new database migration
+.PHONY: db/migrations/new
+db/migrations/new:
+	@echo 'Creating migration files for ${name}...'
+	migrate create -seq -ext=.sql -dir=./migrations ${name}
+
+## db/migrations/up: apply all up database migrations
+.PHONY: db/migrations/up
+db/migrations/up: confirm
+	@echo 'Running up migrations...'
+	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} up
+
+## db/migrations/down: apply all down database migrations
+.PHONY: db/migrations/down
+db/migrations/down: confirm
+	@echo 'Running down migrations...'
+	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} down
+
+## db/migrations/goto version=$1: migrate to a specific version
+.PHONY: db/migrations/goto
+db/migrations/goto: confirm
+	@echo 'Migrating to version ${version}...'
+	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} goto ${version}
+
+## db/migrations/force version=$1: force database migration version
+.PHONY: db/migrations/force
+db/migrations/force: confirm
+	@echo 'Forcing migration version to ${version}...'
+	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} force ${version}
+
+## db/migrations/version: print the current migration version
+.PHONY: db/migrations/version
+db/migrations/version:
+	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} version
